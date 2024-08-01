@@ -61,3 +61,13 @@ def parser_freeproxy(countries= ['DE', 'FR'], max_proxy=50,max_page=150,on_proxy
     print(f"Data saved to {filename}")
     return proxy_list
 
+def load_proxy_data():
+    filename = os.path.join('proxy', 'proxy_data.json')
+    if os.path.exists(filename):
+        with open(filename, 'r') as f:
+            data = json.load(f)
+        print(f"Loaded {len(data)} proxies from {filename}")
+        return data
+    else:
+        print(f"No proxy data file found at {filename}")
+        return None
