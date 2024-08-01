@@ -8,7 +8,8 @@ import os
 def parser_freeproxy(countries= ['DE', 'FR'], max_proxy=50,max_page=150,on_proxy=True):
     base_url = 'https://www.freeproxy.world/?type=&anonymity=&country={}&speed=&port=&page={}'
     proxy_list = []
-    
+    if(not countries):
+        countries=['']
     for country in countries:
         for page in range(1, max_page+1):
             url = base_url.format(country, page)
