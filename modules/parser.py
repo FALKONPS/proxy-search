@@ -18,7 +18,8 @@ def parser_freeproxy(countries= ['DE', 'FR'], max_proxy=50,max_page=150,on_proxy
             
             # Table class='layui-table'
             table = soup.find('table', class_='layui-table')
-
+            if(on_proxy and len(proxy_list)>max_proxy):
+                break;
             if table:
                 rows = table.find_all('tr')
                 if len(rows) <= 1:
@@ -43,7 +44,6 @@ def parser_freeproxy(countries= ['DE', 'FR'], max_proxy=50,max_page=150,on_proxy
                             'type': proxy_type,
                             'anonymity': proxy_anonymity
                         }
-
                         proxy_list.append(compact)
                     if(on_proxy and len(proxy_list)>max_proxy):
                         break;
