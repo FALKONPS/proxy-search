@@ -10,27 +10,16 @@ app = Flask(__name__)
 
 CORS(app)
 
-last_test_results = [  {
-    "address": "test1",
-    "country": "Germany",
-    "city": "Leipzig",
-    "type": "http",
-    "anonymity": "High",
-    "speed": "70"
-  },
-  {
-    "address": "test2",
-    "country": "Germany",
-    "city": "Muenster",
-    "type": "http",
-    "anonymity": "No",
-    "speed": "100"
-  }]
+last_test_results = []
 last_test_file = 'last_test.json'
 proxy_list=[]
+@app.route('/last_test_results', methods=['GET'])
+def get_last_test_results():
+    return jsonify(last_test_results)
+
 @app.route('/proxy_list', methods=['GET'])
 def get_proxy_list():
-    return jsonify(last_test_results)
+    return jsonify(proxy_list)
 
 @app.route('/test', methods=['POST'])
 def start_test():
@@ -52,6 +41,13 @@ def start_test():
         proxy_list = [proxy for proxy in proxy_list if proxy['type'] in connection_types]
     
     return jsonify(success=True, message="Initializes proxy testing")
+
+@app.route('/proxies', methods=['GET'])
+def get_proxies():
+    def handle_proxy_stream():
+        for result in test_all_proxies(proxy_list):
+            yield result
+    return Response(handle_proxy_stream(), content_type='text/event-stream')
 
 
 def test_all_proxies(proxy_list):
