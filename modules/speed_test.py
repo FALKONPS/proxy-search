@@ -48,10 +48,11 @@ def test_proxy(proxy):
         end_time = time.time()
         duration = end_time - start_time
         speed = (total_downloaded / duration) / (1024 * 1024) # (1024 * 1024) to MB/s
+        print(f"Address: {address} Speed: {speed:.2f}")
         return {**proxy, 'speed': f"{speed:.2f}"} # Unpacking proxy "for streaming"
     
     except Exception as e:
-        print(f"Error testing {address}: {str(e)}")
+        print(f"Testing: {address}")
         return {**proxy, 'speed': "0.00"} # Unpacking proxy "for streaming"
 
 
