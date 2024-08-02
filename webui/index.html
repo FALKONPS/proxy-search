@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <title>Proxy List</title>
@@ -7,19 +8,47 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <link rel="stylesheet" href="./assets/css/style.css">
+
 </head>
+
 <body>
-    <nav class="navbar navbar-default navbar-static-top navbar-inverse">
+    <nav class="navbar navbar-dark">
         <div class="container">
-            <div class="navbar-header">
                 <a class="navbar-brand" href="/">Proxy List</a>
-            </div>
         </div>
     </nav>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                        <div class="row">
+                            <div class="btn-group mb-3">
+                                <button id="refreshBtn" class="btn btn-primary">
+                                    <i class="fa fa-refresh"></i> Refresh
+                                </button>
+                                <button id="testBtn" class="btn btn-info">
+                                    <i class="fa fa-check"></i> Make Test
+                                </button>
+                                <button id="settingsBtn" class="btn btn-warning">
+                                    <i class="fa fa-cog"></i> Settings
+                                </button>
+                            </div>
+                            <span id="proxyCount" class="badge bg-secondary"></span>
+                        </div>
+                        
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
     <script src="./assets/js/app.js"></script>
-    <script>
-    </script>
 </body>
+
 </html>
