@@ -53,5 +53,16 @@ def start_test():
     
     return jsonify(success=True, message="Initializes proxy testing")
 
+
+def test_all_proxies(proxy_list):
+    global last_test_results
+    speed_test.is_testing_lock = True
+    last_test_results = []
+    for proxy in proxy_list:
+        result = speed_test.test_proxy(proxy)
+        last_test_results.append(result)
+        yield f"data: {json.dumps(result)}\n\n"
+    speed_test.is_testing_lock = False
+
 if __name__ == '__main__':
     app.run(debug=True, port=2001)
