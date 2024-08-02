@@ -3,7 +3,8 @@ $(document).ready(function () {
   let proxyList = [];
   let selectedCountries = [];
   let currentSort = { field: 'speed', direction: 'desc' };
-  let eventSource = null;
+  let isPolling = false;
+  let pollInterval;
 
   // Constants
   const API_URL = 'http://localhost:2001';
@@ -231,15 +232,31 @@ $(document).ready(function () {
   $('#maxProxies').on('change', renderTable);
   $('input[type="checkbox"]').on('change', renderTable);
   $('#multiCountryGroups').on('change', updateMultiCountrySelector);
-  $(window).on('beforeunload', closeEventSource);
 
   // Initialize
+  checkServerStatus();
   updateCountryGroups();
-  loadLastTest();
+
+  function checkServerStatus() {
+    fetch(`${API_URL}/status`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.is_testing) {
+          disableButton($('#testBtn'), 'Testing...');
+          loadLastTest();
+          startPolling();
+        } else {
+          loadLastTest();
+        }
+      })
+      .catch((error) => {
+        console.error('Error checking server status:', error);
+        loadLastTest();
+      });
+  }
 
   function loadLastTest() {
     clearTable();
-    closeEventSource();
     disableButton($('#refreshBtn'), 'Refreshing...');
 
     $.getJSON(`${API_URL}/last_test_results`)
@@ -252,65 +269,94 @@ $(document).ready(function () {
     clearTable();
     disableButton($('#testBtn'), 'Testing...');
 
-    const data = {
-      countries: selectedCountries,
-      connectionTypes: getSelectedConnectionTypes(),
-      maxProxies: parseInt($('#maxProxies').val()) || 50,
-    };
-
-    fetch(`${API_URL}/test`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
+    fetch(`${API_URL}/status`)
       .then((response) => response.json())
-      .then(handleTestStart)
+      .then((data) => {
+        if (data.is_testing) {
+          console.log('Test already in progress. Starting polling.');
+          startPolling();
+        } else {
+          const testData = {
+            countries: selectedCountries,
+            connectionTypes: getSelectedConnectionTypes(),
+            maxProxies: parseInt($('#maxProxies').val()) || 50,
+          };
+
+          return fetch(`${API_URL}/test`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(testData),
+          });
+        }
+      })
+      .then((response) => {
+        if (response) return response.json();
+      })
+      .then((data) => {
+        if (data && data.success) {
+          console.log(data.message);
+          proxyList = [];
+          startPolling();
+        }
+      })
       .catch((error) => {
         console.error('Error starting proxy test:', error);
         enableButton($('#testBtn'), 'Make Test');
       });
   }
 
+  function startPolling() {
+    if (isPolling) return;
+    isPolling = true;
+
+    pollInterval = setInterval(() => {
+      fetch(`${API_URL}/get_buffer`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.length > 0) {
+            handleProxyUpdates(data);
+          }
+        })
+        .catch((error) => {
+          console.error('Error polling for updates:', error);
+        });
+
+      fetch(`${API_URL}/status`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (!data.is_testing) {
+            stopPolling();
+            enableButton($('#testBtn'), 'Make Test');
+          }
+        })
+        .catch((error) => {
+          console.error('Error checking test completion:', error);
+        });
+    }, 1000);
+  }
+
+  function stopPolling() {
+    if (pollInterval) {
+      clearInterval(pollInterval);
+      pollInterval = null;
+    }
+    isPolling = false;
+  }
+
   function handleTestResults(data) {
     proxyList = data;
-    // updateCountrySelector();
-    // updateMultiCountrySelector();
     renderTable();
   }
 
-  function handleTestStart(data) {
-    if (data.success) {
-      console.log(data.success);
-      proxyList = [];
-      // closeEventSource();
-      const eventSource = new EventSource(`${API_URL}/proxies`);
-      eventSource.onmessage = handleProxyUpdate;
-      eventSource.onerror = handleEventSourceError;
-    }
-  }
-
-  function handleProxyUpdate(event) {
-    const proxy = JSON.parse(event.data);
-    proxyList.push(proxy);
+  function handleProxyUpdates(updates) {
+    updates.forEach((proxy) => {
+      proxyList.push(proxy);
+    });
     updateCountrySelector();
     updateMultiCountrySelector();
     renderTable();
-  }
-
-  function handleEventSourceError(error) {
-    console.error('EventSource failed:', error);
-    closeEventSource();
-    // loadLastTest();
-    enableButton($('#testBtn'), 'Make Test');
-  }
-
-  function closeEventSource() {
-    if (eventSource) {
-      eventSource.close();
-      eventSource = null;
-    }
   }
 
   function updateSettings() {
@@ -397,11 +443,11 @@ $(document).ready(function () {
 
     selectedCountries.forEach((country) => {
       $selectedCountriesDiv.append(`
-                <span class="badge bg-secondary">
-                    ${countryNames[country]}
-                    <a href="#" class="remove-country" data-country="${country}">&times;</a>
-                </span>
-            `);
+        <span class="badge bg-secondary">
+          ${countryNames[country]}
+          <a href="#" class="remove-country" data-country="${country}">&times;</a>
+        </span>
+      `);
     });
   }
 
@@ -438,17 +484,17 @@ $(document).ready(function () {
 
   function appendProxy(proxy) {
     $('#proxyTableBody').append(`
-            <tr class="${
-              parseFloat(proxy.speed) > 0 ? 'available' : 'not-available'
-            }">
-                <td class="text-center">${proxy.address}</td>
-                <td class="text-center">${
-                  countryNames[proxy.country] || proxy.country
-                }</td>
-                <td class="text-center">${proxy.type}</td>
-                <td class="text-center">${proxy.speed} MB/s</td>
-            </tr>
-        `);
+      <tr class="${
+        parseFloat(proxy.speed) > 0 ? 'available' : 'not-available'
+      }">
+        <td class="text-center">${proxy.address}</td>
+        <td class="text-center">${
+          countryNames[proxy.country] || proxy.country
+        }</td>
+        <td class="text-center">${proxy.type}</td>
+        <td class="text-center">${proxy.speed} MB/s</td>
+      </tr>
+    `);
   }
 
   function updateProxyCount(count) {
@@ -506,6 +552,5 @@ $(document).ready(function () {
 
   function handleError(error) {
     console.error('Error:', error);
-    closeEventSource();
   }
 });
