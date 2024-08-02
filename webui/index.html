@@ -14,7 +14,7 @@
 <body>
     <nav class="navbar navbar-dark">
         <div class="container">
-                <a class="navbar-brand" href="/">Proxy List</a>
+            <a class="navbar-brand" href="/">Proxy List</a>
         </div>
     </nav>
 
@@ -24,7 +24,65 @@
                 <div class="card shadow-sm mb-4">
                     <div class="card-body">
                         <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="countrySelect" class="form-label">Filter by Country:</label>
+                                <select id="countrySelect" class="form-select">
+                                    <option value="">All Countries</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="multiCountryGroups" class="form-label">Select Groups Countries:</label>
+                                <select id="multiCountryGroups" class="form-select">
+                                    <!-- Options body -->
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label for="multiCountrySelect" class="form-label">Select Multiple Countries:</label>
+                                <select id="multiCountrySelect" class="form-select" multiple>
+                                    <!-- Options body -->
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <button id="addCountriesBtn" class="btn btn-success">Add Selected Countries</button>
+                        </div>
+                        <div id="selectedCountries" class="selected-countries mt-3"></div>
+                        
                         <div class="row">
+                        
+                            <div class="col-md-6 mb-3">
+                                <label for="maxProxies" class="form-label">Max Number of Proxies:</label>
+                                <input type="number" id="maxProxies" class="form-control" min="1" value="100">
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Connection Types:</label>
+                                <div class="d-flex flex-wrap">
+                                    <div class="form-check me-3">
+                                        <input type="checkbox" id="httpCheck" class="form-check-input" value="http">
+                                        <label class="form-check-label" for="httpCheck">HTTP</label>
+                                    </div>
+                                    <div class="form-check me-3">
+                                        <input type="checkbox" id="httpsCheck" class="form-check-input" value="https">
+                                        <label class="form-check-label" for="httpsCheck">HTTPS</label>
+                                    </div>
+                                    <div class="form-check me-3">
+                                        <input type="checkbox" id="socks4Check" class="form-check-input" value="socks4">
+                                        <label class="form-check-label" for="socks4Check">SOCKS4</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input type="checkbox" id="socks5Check" class="form-check-input" value="socks5">
+                                        <label class="form-check-label" for="socks5Check">SOCKS5</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-check mb-3">
+                                <label class="form-check-label" for="hideUnavailable">Hide Unavailable Proxies</label>
+                                <input type="checkbox" id="hideUnavailable" class="form-check-input">
+                            </div>
                             <div class="btn-group mb-3">
                                 <button id="refreshBtn" class="btn btn-primary">
                                     <i class="fa fa-refresh"></i> Refresh
@@ -38,13 +96,34 @@
                             </div>
                             <span id="proxyCount" class="badge bg-secondary"></span>
                         </div>
-                        
-                            </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover table-striped proxy-list">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" style="width:25%;">IP Address <span class="sort"
+                                                data-sort="ip"><i class="fa fa-sort"></i></span></th>
+                                        <th class="text-center" style="width:25%;">Country <span class="sort"
+                                                data-sort="country"><i class="fa fa-sort"></i></span></th>
+                                        <th class="text-center" style="width:25%;">Type <span class="sort"
+                                                data-sort="type"><i class="fa fa-sort"></i></span></th>
+                                        <th class="text-center" style="width:25%;">Speed <span class="sort"
+                                                data-sort="speed"><i class="fa fa-sort"></i></span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="proxyTableBody">
+                                    <!-- Proxy data body -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <footer class="text-center mt-4">
+        <p>Dark Mode: <a href="#" id="themeToggle" class="btn btn-sm btn-outline-secondary">Toggle</a></p>
+    </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
