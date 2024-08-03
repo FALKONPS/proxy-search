@@ -3,8 +3,8 @@ from flask_cors import CORS
 import json
 import parser
 import speed_test
-import threading
 import time
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -14,6 +14,17 @@ proxy_list = []
 buffer = []
 is_testing = False
 
+def load_proxy_data():
+    filename = os.path.join('proxy', 'proxy_data.json')
+    if os.path.exists(filename):
+        with open(filename, 'r') as f:
+            data = json.load(f)
+        print(f"Loaded {len(data)} proxies from {filename}")
+        return data
+    else:
+        print(f"No proxy data file found at {filename}")
+        return None
+    
 @app.route('/last_test_results', methods=['GET'])
 def get_last_test_results():
     return jsonify(last_test_results)
@@ -33,7 +44,7 @@ def start_test():
     connection_types = data.get('connectionTypes', [])
     max_proxies = data.get('maxProxies', 50)
     
-    proxy_list = parser.parser_freeproxy(countries=countries, max_proxy=max_proxies)
+    proxy_list = load_proxy_data()
 
     if connection_types:
         # Remove unwanted connection types 
