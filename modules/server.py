@@ -1,18 +1,30 @@
-from flask import Flask, Response, jsonify, request
+from flask import Flask, jsonify, request
 from flask_cors import CORS
-import requests
-import time
 import json
 import parser
 import speed_test
+import time
+import os
 
 app = Flask(__name__)
-
 CORS(app)
 
 last_test_results = []
-last_test_file = 'last_test.json'
-proxy_list=[]
+proxy_list = []
+buffer = []
+is_testing = False
+
+def load_proxy_data():
+    filename = os.path.join('proxy', 'proxy_data.json')
+    if os.path.exists(filename):
+        with open(filename, 'r') as f:
+            data = json.load(f)
+        print(f"Loaded {len(data)} proxies from {filename}")
+        return data
+    else:
+        print(f"No proxy data file found at {filename}")
+        return None
+    
 @app.route('/last_test_results', methods=['GET'])
 def get_last_test_results():
     return jsonify(last_test_results)
@@ -23,42 +35,48 @@ def get_proxy_list():
 
 @app.route('/test', methods=['POST'])
 def start_test():
-    """ This method initializes the connection for stream data """
-    global proxy_list
-    if speed_test.is_testing_lock:
+    global proxy_list, is_testing
+    if is_testing:
         return jsonify(success=False, message="A test is already in progress")
     
     data = request.get_json()
     countries = data.get('countries', [])
     connection_types = data.get('connectionTypes', [])
     max_proxies = data.get('maxProxies', 50)
-    print(f'Max Proxies: {max_proxies}, Countries: {countries}, Connection Types: {connection_types}')
-    proxy_list = parser.parser_freeproxy(countries=countries,max_proxy=max_proxies)
+    
+    proxy_list = load_proxy_data()
 
     if connection_types:
         # Remove unwanted connection types 
         # Note this is handled by the parser (OVERHEAD)
         proxy_list = [proxy for proxy in proxy_list if proxy['type'] in connection_types]
     
-    return jsonify(success=True, message="Initializes proxy testing")
+    is_testing = True
+    
+    test_all_proxies()
+    return jsonify(success=True, message="Proxy testing started")
 
-@app.route('/proxies', methods=['GET'])
-def get_proxies():
-    def handle_proxy_stream():
-        for result in test_all_proxies(proxy_list):
-            yield result
-    return Response(handle_proxy_stream(), content_type='text/event-stream')
+@app.route('/status', methods=['GET'])
+def get_status():
+    return jsonify(is_testing=is_testing)
 
+@app.route('/get_buffer', methods=['GET'])
+def get_buffer():
+    global buffer
+    data = buffer
+    buffer = []
+    return jsonify(data)
 
-def test_all_proxies(proxy_list):
-    global last_test_results
-    speed_test.is_testing_lock = True
+def test_all_proxies():
+    global last_test_results, buffer, is_testing
+    is_testing = True
     last_test_results = []
     for proxy in proxy_list:
         result = speed_test.test_proxy(proxy)
         last_test_results.append(result)
-        yield f"data: {json.dumps(result)}\n\n"
-    speed_test.is_testing_lock = False
+        buffer.append(result)
+        # time.sleep(0.1) # TEST
+    is_testing = False
 
 if __name__ == '__main__':
     app.run(debug=True, port=2001)
