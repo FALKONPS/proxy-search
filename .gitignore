@@ -1,3 +1,6 @@
 *.json
 .vscode
 *.pyc
+.trunk
+.pytest_cache
+__pycache__
