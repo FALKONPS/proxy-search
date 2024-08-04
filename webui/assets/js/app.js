@@ -485,13 +485,17 @@ $(document).ready(function () {
   function appendProxy(proxy) {
     $('#proxyTableBody').append(`
       <tr class="${
-        parseFloat(proxy.speed) > 0 ? 'available' : 'not-available'
+        parseFloat(proxy.speed) > 0
+          ? 'available bg-light-blue'
+          : 'not-available'
       }">
         <td class="text-center">${proxy.address}</td>
         <td class="text-center">${
           countryNames[proxy.country] || proxy.country
         }</td>
+        <td class="text-center">${proxy.city}</td>
         <td class="text-center">${proxy.type}</td>
+        <td class="text-center">${proxy.anonymity}</td>
         <td class="text-center">${proxy.speed} MB/s</td>
       </tr>
     `);
