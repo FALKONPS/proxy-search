@@ -1,33 +1,34 @@
 import time
-import json
+
 import requests
 
 test_duration = 10
-is_testing_lock = False # mutex 
+is_testing_lock = False  # mutex
 max_proxies = 100
-file_test_url = ["http://speedtest.tele2.net/100MB.zip","http://fra.download.datapacket.com/100mb.bin"]
+file_test_url = [
+    "http://speedtest.tele2.net/100MB.zip",
+    "http://fra.download.datapacket.com/100mb.bin",
+]
 
 
 def test_proxy(proxy):
-    global file_test_url,chunk_size,test_duration
-    address = proxy['address']
-    proxy_type = proxy['type']
-    
+    global file_test_url, chunk_size, test_duration
+    address = proxy["address"]
+    proxy_type = proxy["type"]
+
     session = requests.Session()
-    if proxy_type in ['http', 'https']:
-        if(proxy_type=='http'):
+    if proxy_type in ["http", "https"]:
+        if proxy_type == "http":
             proxies = {
-                'http': f'{proxy_type}://{address}',
+                "http": f"{proxy_type}://{address}",
             }
         else:
-            proxies = {
-                'https': f'{proxy_type}://{address}'
-            }
+            proxies = {"https": f"{proxy_type}://{address}"}
         session.proxies.update(proxies)
-    elif proxy_type in ['socks4', 'socks5']:
+    elif proxy_type in ["socks4", "socks5"]:
         session.proxies = {
-            'http': f'{proxy_type}://{address}',
-            'https': f'{proxy_type}://{address}'
+            "http": f"{proxy_type}://{address}",
+            "https": f"{proxy_type}://{address}",
         }
     else:
         return 0
@@ -46,11 +47,13 @@ def test_proxy(proxy):
 
             end_time = time.time()
             duration = end_time - start_time
-            speed = (total_downloaded / duration) / (1024 * 1024) # (1024 * 1024) to MB/s
+            speed = (total_downloaded / duration) / (
+                1024 * 1024
+            )  # (1024 * 1024) to MB/s
             print(f"Address: {address} Speed: {speed:.2f}")
-            return {**proxy, 'speed': f"{speed:.2f}"} # Unpacking proxy "for streaming"
+            return {**proxy, "speed": f"{speed:.2f}"}  # Unpacking proxy "for streaming"
 
-        except Exception as e:
+        except Exception:
             print(f"Testing file fails: {address}")
-    
-    return {**proxy, 'speed': "0.00"} # Unpacking proxy "for streaming"
+
+    return {**proxy, "speed": "0.00"}  # Unpacking proxy "for streaming"
