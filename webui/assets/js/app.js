@@ -233,10 +233,6 @@ $(document).ready(function () {
   $('input[type="checkbox"]').on('change', renderTable);
   $('#multiCountryGroups').on('change', updateMultiCountrySelector);
 
-  // Initialize
-  checkServerStatus();
-  updateCountryGroups();
-
   function checkServerStatus() {
     fetch(`${API_URL}/status`)
       .then((response) => response.json())
@@ -379,6 +375,24 @@ $(document).ready(function () {
     updateSortIcon($(this), direction);
   }
 
+  function sortTable(field, direction) {
+    proxyList.sort((a, b) => {
+      let keyA = a[field];
+      let keyB = b[field];
+
+      if (field === 'speed') {
+        keyA = parseFloat(keyA);
+        keyB = parseFloat(keyB);
+      }
+
+      if (keyA < keyB) return direction === 'asc' ? -1 : 1;
+      if (keyA > keyB) return direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    renderTable();
+  }
+
   function addSelectedCountries() {
     const newCountries = $('#multiCountrySelect').val();
     selectedCountries = [...new Set([...selectedCountries, ...newCountries])];
@@ -386,8 +400,7 @@ $(document).ready(function () {
     renderTable();
   }
 
-  function removeCountry(e) {
-    e.preventDefault();
+  function removeCountry() {
     const countryToRemove = $(this).data('country');
     selectedCountries = selectedCountries.filter((c) => c !== countryToRemove);
     updateSelectedCountriesDisplay();
@@ -412,7 +425,6 @@ $(document).ready(function () {
       );
     });
   }
-
   function updateCountrySelector() {
     const countrySelect = $('#countrySelect');
     const countryCounts = {};
@@ -426,17 +438,30 @@ $(document).ready(function () {
     });
 
     countrySelect.empty();
-    countrySelect.append('<option value="">All Countries</option>');
 
-    Object.keys(countryCounts).forEach((country) => {
+    const totalProxies = proxyList.length;
+    countrySelect.append(
+      `<option value="">All Countries (${totalProxies})</option>`
+    );
+
+    const sortedCountries = Object.entries(countryCounts).sort((a, b) => {
+      if (b[1] !== a[1]) {
+        return b[1] - a[1]; // descending
+      }
+      return (countryNames[a[0]] || a[0]).localeCompare(
+        countryNames[b[0]] || b[0]
+      );
+    });
+
+    // Add options for each country
+    sortedCountries.forEach(([country, count]) => {
       countrySelect.append(
-        `<option value="${country}">${countryNames[country] || country} (${
-          countryCounts[country]
-        })</option>`
+        `<option value="${country}">${
+          countryNames[country] || country
+        } (${count})</option>`
       );
     });
   }
-
   function updateSelectedCountriesDisplay() {
     const $selectedCountriesDiv = $('#selectedCountries');
     $selectedCountriesDiv.empty();
@@ -458,7 +483,9 @@ $(document).ready(function () {
     const hideUnavailable = $('#hideUnavailable').is(':checked');
     const maxProxies = parseInt($('#maxProxies').val()) || Infinity;
     const selectedTypes = getSelectedConnectionTypes();
-
+    if (getAutomaticSortValue()) {
+      sortTableBySpeedDesc();
+    }
     proxyList.forEach((proxy) => {
       if (
         shouldRenderProxy(proxy, hideUnavailable, selectedTypes) &&
@@ -468,17 +495,13 @@ $(document).ready(function () {
         visibleCount++;
       }
     });
-
     updateProxyCount(visibleCount);
   }
-
   function shouldRenderProxy(proxy, hideUnavailable, selectedTypes) {
     return (
-      (!hideUnavailable || parseFloat(proxy.speed) > 0) &&
-      (selectedCountries.length === 0 ||
-        selectedCountries.includes(proxy.country)) &&
+      (!hideUnavailable || parseFloat(proxy.speed) > 0) && // Show the non-zero speed proxy If there is no selector, show all
       (selectedTypes.length === 0 ||
-        selectedTypes.includes(proxy.type.toLowerCase()))
+        selectedTypes.includes(proxy.type.toLowerCase())) // If the type 'proxy' is in selectedTypes, include only the 'proxy' type. Otherwise, if there is no selector, show all
     );
   }
 
@@ -502,25 +525,8 @@ $(document).ready(function () {
   }
 
   function updateProxyCount(count) {
+    updateCountrySelector();
     $('#proxyCount').text(`Showing ${count} of ${proxyList.length} proxies`);
-  }
-
-  function sortTable(field, direction) {
-    proxyList.sort((a, b) => {
-      let keyA = a[field];
-      let keyB = b[field];
-
-      if (field === 'speed') {
-        keyA = parseFloat(keyA);
-        keyB = parseFloat(keyB);
-      }
-
-      if (keyA < keyB) return direction === 'asc' ? -1 : 1;
-      if (keyA > keyB) return direction === 'asc' ? 1 : -1;
-      return 0;
-    });
-
-    renderTable();
   }
 
   function updateSortIcon($element, direction) {
@@ -531,7 +537,7 @@ $(document).ready(function () {
   }
 
   function getSelectedConnectionTypes() {
-    return $('input[type="checkbox"]:checked')
+    return $('input[type="checkbox"][id$="Check"]:checked')
       .map(function () {
         return this.value;
       })
@@ -561,4 +567,18 @@ $(document).ready(function () {
   function handleError(error) {
     console.error('Error:', error);
   }
+  function sortTableBySpeedDesc() {
+    proxyList.sort((a, b) => parseFloat(b.speed) - parseFloat(a.speed));
+  }
+  // Initialize
+  // load proxyList
+  checkServerStatus();
+
+  // country-related data
+  updateCountryGroups();
+  updateMultiCountrySelector();
+  updateProxyCount();
+
+  // depends on proxyList
+  renderTable();
 });
