@@ -44,6 +44,7 @@ body {
 
 .table {
   border: 1px solid var(--border-color);
+  --bs-table-bg: none;
 }
 
 .form-group {
@@ -98,7 +99,7 @@ body {
   --border-color: #555;
 }
 
-.dark-mode .table {
+.dark-mode {
   background-color: #444;
   color: #f8f9fa;
 }
@@ -132,4 +133,7 @@ body {
   color: white;
   text-decoration: none;
   font-weight: bold;
+}
+.bg-light-blue {
+  background-color: #e6f2ff !important;
 }
