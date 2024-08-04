@@ -533,7 +533,11 @@ $(document).ready(function () {
       })
       .get();
   }
-
+  function getAutomaticSortValue() {
+    return (
+      $('input[type="checkbox"][id="automaticSort"]:checked').val() == 'on'
+    );
+  }
   function clearTable() {
     $('#proxyTableBody').empty();
   }
