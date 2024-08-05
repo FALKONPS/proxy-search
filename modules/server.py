@@ -30,7 +30,7 @@ def start_test():
     data = request.get_json()
     countries = data.get("countries", [])
     connection_types = data.get("connectionTypes", [])
-    max_proxies = data.get("maxProxies", 50)
+    max_proxies = data.get("maxProxies")
     proxy_list = util_proxy.search_proxy(
         util_proxy.load_proxy_data(),
         max_proxy=max_proxies,
@@ -40,22 +40,27 @@ def start_test():
 
     if connection_types:
         # Remove unwanted connection types
-        # Note this is handled by the parser (OVERHEAD)
         proxy_list = [
             proxy for proxy in proxy_list if proxy["type"] in connection_types
         ]
+    if not len(proxy_list):
+        return jsonify(success=True, message="No proxy matched found"), 200
 
     util_proxy.is_testing = True
-
     logging.info("Proxy testing started")
     thread = threading.Thread(target=util_proxy.test_all_proxies, args=(proxy_list,))
     thread.start()
-    return jsonify(success=True, message="Proxy testing started"), 200
+    return jsonify(success=True, message="Thread started to test proxy speed"), 200
 
 
 @app.route("/status", methods=["GET"])
 def get_status():
-    return jsonify(is_testing=util_proxy.is_testing)
+    matched_proxy = len(proxy_list)
+    return jsonify(
+        is_testing=util_proxy.is_testing,
+        matched_proxy=matched_proxy,
+        test_duration=util_proxy.test_duration,
+    )
 
 
 @app.route("/get_buffer", methods=["GET"])
