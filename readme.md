@@ -21,8 +21,10 @@ Proxy Search is a self-hosted web UI offering many advanced features to choose f
 
 ## TODO
 
-- Estimate the total test time. (Done)
-- Multi-file test (multi-region proxy). (Done)
+- Select source parser
+- Export data as JSON
+- <s>Estimate the total test time</s>
+- <s>Multi-file test (multi-region proxy)</s>
 
 ## Problems
 
