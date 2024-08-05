@@ -76,8 +76,8 @@
                     type="number"
                     id="maxProxies"
                     class="form-control"
-                    min="1"
-                    value="100"
+                    min="0"
+                    value="0"
                   />
                 </div>
 
@@ -165,8 +165,14 @@
                     <i class="fa fa-cog"></i> Settings
                   </button>
                 </div>
-                <span id="proxyCount" class="badge bg-secondary"></span>
+                <div
+                  id="proxyCount"
+                  class="badge bg-dark bg-gradient me-3"
+                ></div>
+
+                <div id="timeEST" class="badge bg-dark md-3"></div>
               </div>
+
               <div class="table-responsive">
                 <table
                   class="table table-bordered table-hover table-striped proxy-list"

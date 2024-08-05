@@ -5,7 +5,8 @@ $(document).ready(function () {
   let currentSort = { field: 'speed', direction: 'desc' };
   let isPolling = false;
   let pollInterval;
-
+  let matched_proxy = 0;
+  let test_duration = 0;
   // Constants
   const API_URL = 'http://localhost:2001';
 
@@ -533,7 +534,26 @@ $(document).ready(function () {
 
   function updateProxyCount(count) {
     updateCountrySelector();
-    $('#proxyCount').text(`Showing ${count} of ${proxyList.length} proxies`);
+    total_time =
+      test_duration * (matched_proxy - count) - count * test_duration;
+
+    const hours = Math.floor(total_time / 3600);
+    const minutes = Math.floor((total_time % 3600) / 60);
+    const seconds = total_time % 60;
+
+    let formattedTime = '';
+
+    if (hours > 0) {
+      formattedTime += `${hours.toString().padStart(2, '0')}:`;
+    }
+    if (hours > 0 || minutes > 0) {
+      formattedTime += `${minutes.toString().padStart(2, '0')}:`;
+    }
+    formattedTime += `${seconds.toString().padStart(2, '0')}`;
+    formattedTime = formattedTime.replace(/:+$/, '');
+    $('#proxyCount').html(
+      `Showing ${count} of ${matched_proxy} proxies<br>Remaining time ${formattedTime}`
+    );
   }
 
   function updateSortIcon($element, direction) {
