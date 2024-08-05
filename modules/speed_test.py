@@ -2,17 +2,16 @@ import time
 
 import requests
 
-test_duration = 10
 is_testing_lock = False  # mutex
-max_proxies = 100
 file_test_url = [
+    "https://test2.fibertelecom.it/100MB.zip",
     "http://speedtest.tele2.net/100MB.zip",
     "http://fra.download.datapacket.com/100mb.bin",
 ]
 
 
-def test_proxy(proxy):
-    global file_test_url, chunk_size, test_duration
+def test_proxy(proxy, test_duration=10):
+    global file_test_url, chunk_size
     address = proxy["address"]
     proxy_type = proxy["type"]
 
