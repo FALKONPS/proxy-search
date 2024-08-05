@@ -6,6 +6,7 @@ import speed_test
 last_test = []
 buffer = []
 is_testing = False
+test_duration = 10
 
 
 def load_proxy_data():
@@ -19,26 +20,29 @@ def load_proxy_data():
 
 
 def search_proxy(proxies, max_proxy=0, key="", values=[]):
-    filtered = []
-    if not max_proxy:
+    if not max_proxy or len(proxies) < max_proxy:
         max_proxy = len(proxies)
 
     if not values:
         return proxies[:max_proxy]
 
-    for proxy in proxies[:max_proxy]:
+    filtered = []
+    for proxy in proxies:
+        print(f"{proxy[key]} is in {values}")
         if proxy[key] in values:
             filtered.append(proxy)
+            if len(filtered) >= max_proxy:
+                break
 
     return filtered
 
 
 def test_all_proxies(proxies):
-    global last_test, buffer, is_testing
+    global last_test, buffer, is_testing, test_duration
     is_testing = True
     last_test = []
     for proxy in proxies:
-        result = speed_test.test_proxy(proxy)
+        result = speed_test.test_proxy(proxy, test_duration=test_duration)
         last_test.append(result)
         buffer.append(result)
         # time.sleep(0.1) # TEST
