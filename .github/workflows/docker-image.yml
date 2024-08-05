@@ -3,16 +3,34 @@ name: Docker Image CI
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ,"FALKONPS-patch-1"]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ,"FALKONPS-patch-1"]
+    branches: ["main"]
 
 jobs:
   build:
     runs-on: self-hosted
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile.server --tag proxy-test-search:$(date +%s)
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up tag
+        id: tag
+        run: echo "tag=proxy-test-search-$(date +%s)" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile.server --tag proxy-test-search:${{ steps.tag.outputs.tag }}
+
+      - name: Run Docker container
+        run: |
+          docker run --name pixy-proxy -d -p 5000:80 -p 2001:2001 proxy-test-search:${{ steps.tag.outputs.tag }}
+          sleep 10
+          docker ps | grep pixy-proxy || { echo "Container failed to run"; exit 1; }
+
+      - name: Clean up
+        if: always()
+        run: |
+          docker rm -f pixy-proxy
