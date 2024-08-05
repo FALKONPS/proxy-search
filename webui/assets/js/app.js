@@ -11,6 +11,7 @@ $(document).ready(function () {
 
   const countryRegion = {
     'Middle East': [
+      'PS', // We often forget what we love :')
       'SA',
       'IR',
       'AE',
@@ -119,6 +120,7 @@ $(document).ready(function () {
   };
 
   const countryNames = {
+    PS: 'Palestine',
     SA: 'Saudi Arabia',
     IR: 'Iran',
     AE: 'United Arab Emirates',
@@ -241,6 +243,8 @@ $(document).ready(function () {
           disableButton($('#testBtn'), 'Testing...');
           loadLastTest();
           startPolling();
+          test_duration = data.test_duration;
+          matched_proxy = data.matched_proxy;
         } else {
           loadLastTest();
         }
@@ -272,10 +276,13 @@ $(document).ready(function () {
           console.log('Test already in progress. Starting polling.');
           startPolling();
         } else {
+          const countryList = selectedCountries.map(
+            (value) => countryNames[value]
+          );
           const testData = {
-            countries: selectedCountries,
+            countries: countryList,
             connectionTypes: getSelectedConnectionTypes(),
-            maxProxies: parseInt($('#maxProxies').val()) || 50,
+            maxProxies: parseInt($('#maxProxies').val()),
           };
 
           return fetch(`${API_URL}/test`, {
