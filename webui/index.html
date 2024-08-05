@@ -16,12 +16,18 @@
   </head>
 
   <body>
-    <nav class="navbar navbar-dark">
-      <div class="container">
-        <a class="navbar-brand" href="/">Proxy List</a>
+    <nav class="navbar navbar-dark bg-dark">
+      <div class="container" style="padding: 0; margin-top: 0">
+        <a class="navbar-brand" href="/">
+          <img
+            src="assets/img/logo.png"
+            alt="Proxy Search Logo"
+            style="width: 64px; height: auto"
+          />
+          Proxy Search
+        </a>
       </div>
     </nav>
-
     <div class="container">
       <div class="row">
         <div class="col-12">
@@ -29,47 +35,12 @@
             <div class="card-body">
               <div class="row">
                 <div class="col-md-4 mb-3">
-                  <label for="countrySelect" class="form-label"
-                    >Filter by Country:</label
-                  >
-                  <select id="countrySelect" class="form-select">
-                    <option value="">All Countries</option>
+                  <label for="proxySearch" class="form-label">Search:</label>
+                  <select id="proxySearch" class="form-select">
+                    <option value="">Free Proxy</option>
+                    <option value="">StarProxy</option>
                   </select>
-                </div>
-
-                <div class="col-md-4 mb-3">
-                  <label for="multiCountryGroups" class="form-label"
-                    >Select Groups Countries:</label
-                  >
-                  <select id="multiCountryGroups" class="form-select">
-                    <!-- Options body -->
-                  </select>
-                </div>
-
-                <div class="col-md-4 mb-3">
-                  <label for="multiCountrySelect" class="form-label"
-                    >Select Multiple Countries:</label
-                  >
-                  <select id="multiCountrySelect" class="form-select" multiple>
-                    <!-- Options body -->
-                  </select>
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <button
-                  type="button"
-                  id="addCountriesBtn"
-                  class="btn btn-success"
-                >
-                  Add Selected Countries
-                </button>
-              </div>
-              <div id="selectedCountries" class="selected-countries mt-3"></div>
-
-              <div class="row">
-                <div class="col-md-6 mb-3">
-                  <label for="maxProxies" class="form-label"
+                  <label for="maxProxies" class="form-label mt-2"
                     >Max Number of Proxies:</label
                   >
                   <input
@@ -80,8 +51,47 @@
                     value="0"
                   />
                 </div>
+                <div class="col-md-4 mb-3">
+                  <label for="multiCountryGroups" class="form-label"
+                    >Select Groups Countries:</label
+                  >
+                  <select id="multiCountryGroups" class="form-select">
+                    <!-- Options body -->
+                  </select>
+                  <label for="countrySelect" class="form-label mt-2"
+                    >Filter by Country:</label
+                  >
+                  <select id="countrySelect" class="form-select">
+                    <option value="">All Countries</option>
+                  </select>
+                </div>
 
-                <div class="col-md-6 mb-3">
+                <div class="col-md-4 mb-3">
+                  <label for="multiCountrySelect" class="form-label"
+                    >Select Multiple Countries:</label
+                  >
+                  <select id="multiCountrySelect" class="form-select" multiple>
+                    <!-- Options body -->
+                  </select>
+
+                  <div class="mt-2">
+                    <button
+                      type="button"
+                      id="addCountriesBtn"
+                      class="btn btn-success"
+                    >
+                      Add Selected Countries
+                    </button>
+                  </div>
+                  <div
+                    id="selectedCountries"
+                    class="selected-countries mt-3"
+                  ></div>
+                </div>
+              </div>
+
+              <div class="row mt-3">
+                <div class="col-md-4 mb-3">
                   <label class="form-label">Connection Types:</label>
                   <div class="d-flex flex-wrap">
                     <div class="form-check me-3">
@@ -130,26 +140,31 @@
                     </div>
                   </div>
                 </div>
-                <div class="mb-3">
-                  <label class="form-check-label" for="hideUnavailable"
-                    >Hide Unavailable Proxies</label
-                  >
-                  <input
-                    type="checkbox"
-                    id="hideUnavailable"
-                    class="form-check-input"
-                  />
+                <div class="col-md-4 mb-3">
+                  <div class="mb-3">
+                    <label class="form-check-label" for="hideUnavailable"
+                      >Hide Unavailable Proxies</label
+                    >
+                    <input
+                      type="checkbox"
+                      id="hideUnavailable"
+                      class="form-check-input"
+                    />
+                  </div>
                 </div>
-                <div class="mb-3">
-                  <label class="form-check-label" for="automaticSort"
-                    >Automatic Sort</label
-                  >
-                  <input
-                    type="checkbox"
-                    id="automaticSort"
-                    class="form-check-input"
-                  />
+                <div class="col-md-4 mb-3">
+                  <div class="mb-3">
+                    <label class="form-check-label" for="automaticSort"
+                      >Automatic Sort</label
+                    >
+                    <input
+                      type="checkbox"
+                      id="automaticSort"
+                      class="form-check-input"
+                    />
+                  </div>
                 </div>
+
                 <div class="btn-group mb-3">
                   <button type="button" id="refreshBtn" class="btn btn-primary">
                     <i class="fa fa-refresh"></i> Refresh
