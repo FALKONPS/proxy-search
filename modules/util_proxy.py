@@ -1,4 +1,5 @@
 import json
+import math
 import os
 
 import speed_test
@@ -19,21 +20,33 @@ def load_proxy_data():
         return []
 
 
-def search_proxy(proxies, max_proxy=0, key="", values=[]):
+def search_proxy(proxies, key, values, max_proxy=0):
+    per_value = 0
     if not max_proxy or len(proxies) < max_proxy:
         max_proxy = len(proxies)
+
+    elif (max_proxy / len(values)) >= 1:
+        # Distribute the proxy equally on values
+        per_value = math.floor(max_proxy / len(values))
 
     if not values:
         return proxies[:max_proxy]
 
     filtered = []
-    for proxy in proxies:
-        print(f"{proxy[key]} is in {values}")
-        if proxy[key] in values:
-            filtered.append(proxy)
-            if len(filtered) >= max_proxy:
+    for value in values:
+        counter = 0
+        to_next = False
+        for proxy in proxies:
+            if proxy[key] == value:
+                filtered.append(proxy)
+                counter = counter + 1
+                if len(filtered) >= max_proxy:
+                    return filtered
+                elif per_value and counter >= per_value:
+                    to_next = True
+                    break
+            if to_next:
                 break
-
     return filtered
 
 

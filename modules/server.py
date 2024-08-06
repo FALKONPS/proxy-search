@@ -1,8 +1,8 @@
 import logging
 import parser
 import threading
-import public
 
+import public
 import util_proxy
 from flask import Flask, jsonify, request
 from flask_cors import CORS
@@ -36,14 +36,12 @@ def start_test():
     connection_types = data.get("connectionTypes", [])
     max_proxies = data.get("maxProxies")
     if search_engine == parser_search_engine[0]:  # freeproxy parser
-        proxies = parser.parser_freeproxy(
-            countries=countries, max_proxy=max_proxies
-        )
+        proxies = parser.parser_freeproxy(countries=countries, max_proxy=max_proxies)
     else:
-        countries=[public.countryNames[a] for a in countries] # full name
+        countries = [public.countryNames[a] for a in countries]  # full name
         proxies_raw = util_proxy.load_proxy_data()
         proxies = util_proxy.search_proxy(
-            proxies_raw,
+            proxies=proxies_raw,
             max_proxy=max_proxies,
             key="country",
             values=countries,
