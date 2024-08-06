@@ -551,6 +551,7 @@ $(document).ready(function () {
         <td class="text-center">${proxy.type}</td>
         <td class="text-center">${proxy.anonymity}</td>
         <td class="text-center">${proxy.speed} MB/s</td>
+        <td class="text-center">${proxy.latency || 'N/N'} ms</td>
       </tr>
     `);
   }

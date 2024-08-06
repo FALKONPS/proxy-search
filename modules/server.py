@@ -33,10 +33,12 @@ def start_test():
 
     data = request.get_json()
     countries = data.get("countries", [])
-    search_engine = data.get("searchEngine", parser_search_engine[0])  # json parser
+    search_engine = data.get(
+        "searchEngine",
+    )  # json parser
     connection_types = data.get("connectionTypes", [])
     max_proxies = data.get("maxProxies")
-    if search_engine == parser_search_engine[0]:  # freeproxy parser
+    if search_engine == "www.freeproxy.world":
         # Note parsing 'freeproxy.world' consumes a lot of time (1>MIN)
         proxies = parser.parser_freeproxy(countries=countries, max_proxy=max_proxies)
     else:
