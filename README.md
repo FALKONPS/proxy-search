@@ -2,7 +2,7 @@
 
 Proxy Search is a self-hosted web UI offering many advanced features to choose from and test proxies.
 
-![image](https://github.com/user-attachments/assets/ac73f206-9877-4ba2-b31e-26c6a46cc9e5)
+![image](https://github.com/user-attachments/assets/618b0d6c-bd54-407f-97a5-492c60a6e48a)
 
 **Warning:** This project is still in development.
 
@@ -54,7 +54,7 @@ To build and run the Docker image, follow these steps:
 3. Run the Docker container:
 
    ```bash
-   docker run -p 2001:2001 falkonps/proxy-search:latest
+   docker run -p 2001:2001 -p 5000:80 falkonps/proxy-search:latest
    ```
 ## License
 
