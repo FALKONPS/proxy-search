@@ -31,11 +31,8 @@ Proxy Search is a self-hosted web UI offering many advanced features to choose f
 - Auto-reload drop event/stream session (possible conflict between jQuery and JavaScript).
   - Solved by persisting the session.
 
-## How to Run
 
-The recommended option is to create a Python virtual environment and install the requirements from the `requirements.txt` file.
-
-**Note:** The final Dockerfile is coming soon. Currently, only the backend server Docker image is available.
+## Quick Install
 
 To build and run the Docker image, follow these steps:
 
@@ -57,5 +54,6 @@ To build and run the Docker image, follow these steps:
    ```bash
    docker run -p 2001:2001 falkonps/proxy-search:latest
    ```
+## License
 
-4. Open the `index.html` file located in the `webui` folder to access the web interface.
+This project is licensed under the MIT License. For more details, see the [LICENSE](LICENSE) file.
