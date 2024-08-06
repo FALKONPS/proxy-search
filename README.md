@@ -2,6 +2,8 @@
 
 Proxy Search is a self-hosted web UI offering many advanced features to choose from and test proxies.
 
+![image](https://github.com/user-attachments/assets/ac73f206-9877-4ba2-b31e-26c6a46cc9e5)
+
 **Warning:** This project is still in development.
 
 ## Features
