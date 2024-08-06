@@ -1,6 +1,6 @@
 $(document).ready(function () {
   // Global variables
-  let proxyList = [];
+  let proxies = [];
   let selectedCountries = [];
   let currentSort = { field: 'speed', direction: 'desc' };
   let isPolling = false;
@@ -277,13 +277,14 @@ $(document).ready(function () {
           console.log('Test already in progress. Starting polling.');
           startPolling();
         } else {
-          const countryList = selectedCountries.map(
-            (value) => countryNames[value]
-          );
+          // const countryList = selectedCountries.map(
+          //   (value) => countryNames[value]
+          // );
           const testData = {
-            countries: countryList,
+            countries: selectedCountries,
             connectionTypes: getSelectedConnectionTypes(),
             maxProxies: parseInt($('#maxProxies').val()),
+            searchEngine: $('#searchEngine').val(),
           };
 
           return fetch(`${API_URL}/test`, {
@@ -301,7 +302,7 @@ $(document).ready(function () {
       .then((data) => {
         if (data && data.success) {
           console.log(data.message);
-          proxyList = [];
+          proxies = [];
           startPolling();
         }
       })
@@ -350,13 +351,13 @@ $(document).ready(function () {
   }
 
   function handleTestResults(data) {
-    proxyList = data;
+    proxies = data;
     renderTable();
   }
 
   function handleProxyUpdates(updates) {
     updates.forEach((proxy) => {
-      proxyList.push(proxy);
+      proxies.push(proxy);
     });
     updateCountrySelector();
     updateMultiCountrySelector();
@@ -384,7 +385,7 @@ $(document).ready(function () {
   }
 
   function sortTable(field, direction) {
-    proxyList.sort((a, b) => {
+    proxies.sort((a, b) => {
       let keyA = a[field];
       let keyB = b[field];
 
@@ -437,7 +438,7 @@ $(document).ready(function () {
     const countrySelect = $('#countrySelect');
     const countryCounts = {};
 
-    proxyList.forEach((proxy) => {
+    proxies.forEach((proxy) => {
       if (proxy.country in countryCounts) {
         countryCounts[proxy.country]++;
       } else {
@@ -447,7 +448,7 @@ $(document).ready(function () {
 
     countrySelect.empty();
 
-    const totalProxies = proxyList.length;
+    const totalProxies = proxies.length;
     countrySelect.append(
       `<option value="">All Countries (${totalProxies})</option>`
     );
@@ -494,7 +495,7 @@ $(document).ready(function () {
     if (getAutomaticSortValue()) {
       sortTableBySpeedDesc();
     }
-    proxyList.forEach((proxy) => {
+    proxies.forEach((proxy) => {
       if (
         shouldRenderProxy(proxy, hideUnavailable, selectedTypes) &&
         visibleCount < maxProxies
@@ -503,7 +504,7 @@ $(document).ready(function () {
         visibleCount++;
       }
     });
-    updateProxyCount(visibleCount);
+    updateProxyCount(visibleCount, matched_proxy, test_duration);
   }
   function shouldRenderProxy(proxy, hideUnavailable, selectedTypes) {
     return (
@@ -532,10 +533,11 @@ $(document).ready(function () {
     `);
   }
 
-  function updateProxyCount(count) {
+  function updateProxyCount(count, matched_proxy, test_duration) {
     updateCountrySelector();
-    total_time =
-      test_duration * (matched_proxy - count) - count * test_duration;
+    total_time = Math.abs(
+      test_duration * (matched_proxy - count) - count * test_duration
+    );
 
     const hours = Math.floor(total_time / 3600);
     const minutes = Math.floor((total_time % 3600) / 60);
@@ -595,17 +597,49 @@ $(document).ready(function () {
     console.error('Error:', error);
   }
   function sortTableBySpeedDesc() {
-    proxyList.sort((a, b) => parseFloat(b.speed) - parseFloat(a.speed));
+    proxies.sort((a, b) => parseFloat(b.speed) - parseFloat(a.speed));
   }
-  // Initialize
-  // load proxyList
-  checkServerStatus();
 
+  function get_search_engine() {
+    fetch(`${API_URL}/get_search_engine`)
+      .then((response) => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          console.error('Network response was not ok');
+          throw new Error('Network response was not ok');
+        }
+      })
+      .then((data) => {
+        if (Array.isArray(data.value)) {
+          var searchEngine = $('#searchEngine');
+          searchEngine.empty();
+          data.value.forEach(function (engine) {
+            searchEngine.append(
+              $('<option>', {
+                value: engine,
+                text: engine,
+              })
+            );
+          });
+        } else {
+          console.error('Invalid data format');
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to fetch search engines:', error);
+      });
+  }
+
+  // Initialize
+  // load proxies
+  checkServerStatus();
+  get_search_engine();
   // country-related data
   updateCountryGroups();
   updateMultiCountrySelector();
   updateProxyCount();
 
-  // depends on proxyList
+  // depends on proxies
   renderTable();
 });

@@ -24,7 +24,7 @@
             alt="Proxy Search Logo"
             style="width: 64px; height: auto"
           />
-          Proxy Search
+          Proxy Search Engine
         </a>
       </div>
     </nav>
@@ -35,11 +35,10 @@
             <div class="card-body">
               <div class="row">
                 <div class="col-md-4 mb-3">
-                  <label for="proxySearch" class="form-label">Search:</label>
-                  <select id="proxySearch" class="form-select">
-                    <option value="">Free Proxy</option>
-                    <option value="">StarProxy</option>
-                  </select>
+                  <label for="searchEngine" class="form-label"
+                    >Search Engine:</label
+                  >
+                  <select id="searchEngine" class="form-select"></select>
                   <label for="maxProxies" class="form-label mt-2"
                     >Max Number of Proxies:</label
                   >
@@ -91,56 +90,7 @@
               </div>
 
               <div class="row mt-3">
-                <div class="col-md-4 mb-3">
-                  <label class="form-label">Connection Types:</label>
-                  <div class="d-flex flex-wrap">
-                    <div class="form-check me-3">
-                      <input
-                        type="checkbox"
-                        id="httpCheck"
-                        class="form-check-input"
-                        value="http"
-                      />
-                      <label class="form-check-label" for="httpCheck"
-                        >HTTP</label
-                      >
-                    </div>
-                    <div class="form-check me-3">
-                      <input
-                        type="checkbox"
-                        id="httpsCheck"
-                        class="form-check-input"
-                        value="https"
-                      />
-                      <label class="form-check-label" for="httpsCheck"
-                        >HTTPS</label
-                      >
-                    </div>
-                    <div class="form-check me-3">
-                      <input
-                        type="checkbox"
-                        id="socks4Check"
-                        class="form-check-input"
-                        value="socks4"
-                      />
-                      <label class="form-check-label" for="socks4Check"
-                        >SOCKS4</label
-                      >
-                    </div>
-                    <div class="form-check">
-                      <input
-                        type="checkbox"
-                        id="socks5Check"
-                        class="form-check-input"
-                        value="socks5"
-                      />
-                      <label class="form-check-label" for="socks5Check"
-                        >SOCKS5</label
-                      >
-                    </div>
-                  </div>
-                </div>
-                <div class="col-md-4 mb-3">
+                <div class="col-md-auto mb-3">
                   <div class="mb-3">
                     <label class="form-check-label" for="hideUnavailable"
                       >Hide Unavailable Proxies</label
@@ -152,7 +102,7 @@
                     />
                   </div>
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="col-md-auto mb-3">
                   <div class="mb-3">
                     <label class="form-check-label" for="automaticSort"
                       >Automatic Sort</label
@@ -162,6 +112,55 @@
                       id="automaticSort"
                       class="form-check-input"
                     />
+                  </div>
+                </div>
+                <div class="col-md-auto mb-3">
+                  <label class="form-label">Connection Types:</label>
+                  <div class="d-flex flex-wrap">
+                    <div class="form-check me-1">
+                      <input
+                        type="checkbox"
+                        id="httpCheck"
+                        class="form-check-input"
+                        value="http"
+                      />
+                      <label class="form-check-label" for="httpCheck"
+                        >HTTP</label
+                      >
+                    </div>
+                    <div class="form-check me-1">
+                      <input
+                        type="checkbox"
+                        id="httpsCheck"
+                        class="form-check-input"
+                        value="https"
+                      />
+                      <label class="form-check-label" for="httpsCheck"
+                        >HTTPS</label
+                      >
+                    </div>
+                    <div class="form-check me-1">
+                      <input
+                        type="checkbox"
+                        id="socks4Check"
+                        class="form-check-input"
+                        value="socks4"
+                      />
+                      <label class="form-check-label" for="socks4Check"
+                        >SOCKS4</label
+                      >
+                    </div>
+                    <div class="form-check me-1">
+                      <input
+                        type="checkbox"
+                        id="socks5Check"
+                        class="form-check-input"
+                        value="socks5"
+                      />
+                      <label class="form-check-label" for="socks5Check"
+                        >SOCKS5</label
+                      >
+                    </div>
                   </div>
                 </div>
 
