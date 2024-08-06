@@ -4,16 +4,21 @@ WORKDIR /app
 
 COPY requirements.txt /app/
 
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt --no-cache-dir
 
 COPY ./modules/ /app/modules/
 
 COPY ./webui/. /app/static/
 
 ENV FLASK_APP=modules/server.py
+
 ENV STATIC_PATH /app/static
+
 ENV STATIC_INDEX 1
+
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+
+COPY ./proxy/. /app/proxy/.
 
 EXPOSE 80 2001
 
