@@ -1,4 +1,3 @@
-import logging
 import parser
 import threading
 
@@ -12,6 +11,7 @@ CORS(app)
 
 parser_search_engine = ["www.freeproxy.world", "JSON"]
 proxies = []
+thread = None
 
 
 @app.route("/last_test_results", methods=["GET"])
@@ -26,7 +26,8 @@ def get_proxy_list():
 
 @app.route("/test", methods=["POST"])
 def start_test():
-    global proxies
+
+    global proxies, thread
     if util_proxy.is_testing:
         return jsonify(success=False, message="A test is already in progress")
 
@@ -54,8 +55,8 @@ def start_test():
         return jsonify(success=True, message="No proxy matched found"), 200
 
     util_proxy.is_testing = True
-    logging.info("Proxy testing started")
     thread = threading.Thread(target=util_proxy.test_all_proxies, args=(proxies,))
+    thread.daemon = True
     thread.start()
     return jsonify(success=True, message="Thread started to test proxy speed"), 200
 
@@ -80,6 +81,17 @@ def get_buffer():
 @app.route("/get_search_engine", methods=["GET"])
 def get_search_engine():
     return jsonify(value=parser_search_engine), 200
+
+
+@app.route("/force_stop", methods=["PUT"])
+def force_stop():
+    data = request.get_json()
+    if data["action"] == "stop" and util_proxy.is_testing:
+        util_proxy.stop_thread = True
+        try:
+            thread.join(30)
+        except:
+            print("EXIT EXCEPTION ")
 
 
 if __name__ == "__main__":

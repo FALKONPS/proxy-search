@@ -7,6 +7,7 @@ import speed_test
 last_test = []
 buffer = []
 is_testing = False
+stop_thread = False
 test_duration = 10
 
 
@@ -51,10 +52,15 @@ def search_proxy(proxies, key, values, max_proxy=0):
 
 
 def test_all_proxies(proxies):
-    global last_test, buffer, is_testing, test_duration
+    global last_test, buffer, is_testing, test_duration, stop_thread
     is_testing = True
+    stop_thread = False
     last_test = []
     for proxy in proxies:
+        if stop_thread:
+            is_testing = False
+            stop_thread = False
+            return 0
         result = speed_test.test_proxy(proxy, test_duration=test_duration)
         last_test.append(result)
         buffer.append(result)
