@@ -1,6 +1,7 @@
 import time
 
 import requests
+from ping3 import ping
 
 is_testing_lock = False  # mutex
 file_test_url = [
@@ -50,9 +51,18 @@ def test_proxy(proxy, test_duration=10):
                 1024 * 1024
             )  # (1024 * 1024) to MB/s
             print(f"Address: {address} Speed: {speed:.2f}")
-            return {**proxy, "speed": f"{speed:.2f}"}  # Unpacking proxy "for streaming"
+            latency = ping(address.split(":")[0]) * 1000
+            return {
+                **proxy,
+                "speed": f"{speed:.2f}",
+                "latency": f"{latency:.3f}",
+            }  # Unpacking proxy "for streaming"
 
         except Exception:
             print(f"Testing file fails: {address}")
 
-    return {**proxy, "speed": "0.00"}  # Unpacking proxy "for streaming"
+    return {
+        **proxy,
+        "speed": "0.00",
+        "latency": "0.00",
+    }  # Unpacking proxy "for streaming"

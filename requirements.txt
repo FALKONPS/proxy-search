@@ -2,3 +2,4 @@ Flask==3.0.2
 Flask-Cors==4.0.0
 requests==2.31.0
 beautifulsoup4==4.12.3
+ping3==4.0.8
