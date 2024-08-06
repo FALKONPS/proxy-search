@@ -235,13 +235,28 @@ $(document).ready(function () {
   $('#maxProxies').on('change', renderTable);
   $('input[type="checkbox"]').on('change', renderTable);
   $('#multiCountryGroups').on('change', updateMultiCountrySelector);
+  $('#stopBtn').click(force_stop);
 
+  function force_stop() {
+    fetch(`${API_URL}/force_stop`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ action: 'stop' }),
+    });
+  }
   function checkServerStatus() {
     fetch(`${API_URL}/status`)
       .then((response) => response.json())
       .then((data) => {
         if (data.is_testing) {
-          disableButton($('#testBtn'), 'Testing...');
+          disableButton($('#testBtn'), 'Testing...', 'fa-spinner fa-spin');
+          enableButton(
+            $('#stopBtn'),
+            'Force Stop Signal',
+            'fa-circle-exclamation'
+          );
           loadLastTest();
           startPolling();
           test_duration = data.test_duration;
@@ -258,18 +273,25 @@ $(document).ready(function () {
 
   function loadLastTest() {
     clearTable();
-    disableButton($('#refreshBtn'), 'Refreshing...');
-
+    disableButton($('#refreshBtn'), 'Refreshing...', 'fa-spinner');
+    enableButton($('#stopBtn'), 'Force Stop Signal', 'fa-circle-exclamation');
     $.getJSON(`${API_URL}/last_test_results`)
       .done(handleTestResults)
       .fail(handleError)
-      .always(() => enableButton($('#refreshBtn'), 'Refresh'));
+      .always(() => {
+        enableButton($('#refreshBtn'), 'Refresh', 'fa-refresh');
+        enableButton(
+          $('#stopBtn'),
+          'Force Stop Signal',
+          'fa-circle-exclamation'
+        );
+      });
   }
 
   function startProxyTest() {
     clearTable();
-    disableButton($('#testBtn'), 'Testing...');
-
+    disableButton($('#testBtn'), 'Testing...', 'fa-spinner fa-spin');
+    enableButton($('#stopBtn'), 'Force Stop Signal', 'fa-circle-exclamation');
     fetch(`${API_URL}/status`)
       .then((response) => response.json())
       .then((data) => {
@@ -308,7 +330,8 @@ $(document).ready(function () {
       })
       .catch((error) => {
         console.error('Error starting proxy test:', error);
-        enableButton($('#testBtn'), 'Make Test');
+        enableButton($('#testBtn'), 'Make Test', 'fa-check');
+        disableButton($('#stopBtn'), 'Not Running', 'fa-circle-exclamation');
       });
   }
 
@@ -333,7 +356,12 @@ $(document).ready(function () {
         .then((data) => {
           if (!data.is_testing) {
             stopPolling();
-            enableButton($('#testBtn'), 'Make Test');
+            enableButton($('#testBtn'), 'Make Test', 'fa-check');
+            disableButton(
+              $('#stopBtn'),
+              'Not Running',
+              'fa-circle-exclamation'
+            );
           }
         })
         .catch((error) => {
@@ -581,16 +609,12 @@ $(document).ready(function () {
     $('#proxyTableBody').empty();
   }
 
-  function disableButton($button, text) {
-    $button
-      .prop('disabled', true)
-      .html(`<i class="fa fa-spinner fa-spin"></i> ${text}`);
+  function disableButton($button, text, fa) {
+    $button.prop('disabled', true).html(`<i class="fa ${fa}"></i> ${text}`);
   }
 
-  function enableButton($button, text) {
-    $button
-      .prop('disabled', false)
-      .html(`<i class="fa fa-refresh"></i> ${text}`);
+  function enableButton($button, text, fa) {
+    $button.prop('disabled', false).html(`<i class="fa ${fa}"></i> ${text}`);
   }
 
   function handleError(error) {
