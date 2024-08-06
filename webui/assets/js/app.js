@@ -274,17 +274,11 @@ $(document).ready(function () {
   function loadLastTest() {
     clearTable();
     disableButton($('#refreshBtn'), 'Refreshing...', 'fa-spinner');
-    enableButton($('#stopBtn'), 'Force Stop Signal', 'fa-circle-exclamation');
     $.getJSON(`${API_URL}/last_test_results`)
       .done(handleTestResults)
       .fail(handleError)
       .always(() => {
         enableButton($('#refreshBtn'), 'Refresh', 'fa-refresh');
-        enableButton(
-          $('#stopBtn'),
-          'Force Stop Signal',
-          'fa-circle-exclamation'
-        );
       });
   }
 
@@ -331,7 +325,7 @@ $(document).ready(function () {
       .catch((error) => {
         console.error('Error starting proxy test:', error);
         enableButton($('#testBtn'), 'Make Test', 'fa-check');
-        disableButton($('#stopBtn'), 'Not Running', 'fa-circle-exclamation');
+        disableButton($('#stopBtn'), 'Not Running', 'fa-triangle-exclamation');
       });
   }
 
@@ -360,7 +354,7 @@ $(document).ready(function () {
             disableButton(
               $('#stopBtn'),
               'Not Running',
-              'fa-circle-exclamation'
+              'fa-triangle-exclamation'
             );
           }
         })

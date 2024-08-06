@@ -37,6 +37,7 @@ def start_test():
     connection_types = data.get("connectionTypes", [])
     max_proxies = data.get("maxProxies")
     if search_engine == parser_search_engine[0]:  # freeproxy parser
+        # Note parsing 'freeproxy.world' consumes a lot of time (1>MIN)
         proxies = parser.parser_freeproxy(countries=countries, max_proxy=max_proxies)
     else:
         countries = [public.countryNames[a] for a in countries]  # full name
@@ -54,7 +55,6 @@ def start_test():
     if not len(proxies):
         return jsonify(success=True, message="No proxy matched found"), 200
 
-    util_proxy.is_testing = True
     thread = threading.Thread(target=util_proxy.test_all_proxies, args=(proxies,))
     thread.daemon = True
     thread.start()
