@@ -1,0 +1,20 @@
+Store the JSON file under the name proxy_data.json, this can be done by scraping a website:
+For example
+[
+    {
+        "address": "66.228.35.209:60840",
+        "country": "United States of America",
+        "city": "New York City",
+        "speed": "19127 ms",
+        "type": "socks4",
+        "anonymity": "High"
+    },
+    {
+        "address": "160.22.16.16:3128",
+        "country": "-",
+        "city": "-",
+        "speed": "7310 ms",
+        "type": "http",
+        "anonymity": "No"
+    }
+]
