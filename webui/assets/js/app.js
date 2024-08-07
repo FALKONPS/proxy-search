@@ -5,8 +5,7 @@ $(document).ready(function () {
   let currentSort = { field: 'speed', direction: 'desc' };
   let isPolling = false;
   let pollInterval;
-  let matched_proxy = 0;
-  let test_duration = 0;
+  var visibleCount = 0;
   // Constants
   const API_URL = 'http://localhost:2001';
 
@@ -247,9 +246,21 @@ $(document).ready(function () {
     });
   }
   function checkServerStatus() {
+    // Note: Possible conflict when a timeout is not set; the page will reload after the request
+    // This is solved by setting an AbortController
+    // This method is still in the testing stage
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+    }, 15000); // 15 SEC
     fetch(`${API_URL}/status`)
-      .then((response) => response.json())
+      .then((response) => {
+        clearTimeout(timeoutId);
+        return response.json();
+      })
       .then((data) => {
+        test_duration = data.test_duration;
+        matched_proxy = data.matched_proxy;
         if (data.is_testing) {
           disableButton($('#testBtn'), 'Testing...', 'fa-spinner fa-spin');
           enableButton(
@@ -259,9 +270,8 @@ $(document).ready(function () {
           );
           loadLastTest();
           startPolling();
-          test_duration = data.test_duration;
-          matched_proxy = data.matched_proxy;
         } else {
+          test_duration = 0;
           loadLastTest();
         }
       })
@@ -355,6 +365,13 @@ $(document).ready(function () {
               $('#stopBtn'),
               'Not Running',
               'fa-triangle-exclamation'
+            );
+          } else {
+            // Update after each interval call
+            updateProxyCount(
+              visibleCount,
+              data.matched_proxy,
+              data.test_duration
             );
           }
         })
@@ -510,7 +527,7 @@ $(document).ready(function () {
   function renderTable() {
     const $proxyTableBody = $('#proxyTableBody');
     $proxyTableBody.empty();
-    let visibleCount = 0;
+    visibleCount = 0;
     const hideUnavailable = $('#hideUnavailable').is(':checked');
     const maxProxies = parseInt($('#maxProxies').val()) || Infinity;
     const selectedTypes = getSelectedConnectionTypes();
@@ -526,7 +543,6 @@ $(document).ready(function () {
         visibleCount++;
       }
     });
-    updateProxyCount(visibleCount, matched_proxy, test_duration);
   }
   function shouldRenderProxy(proxy, hideUnavailable, selectedTypes) {
     return (
@@ -577,7 +593,7 @@ $(document).ready(function () {
     formattedTime += `${seconds.toString().padStart(2, '0')}`;
     formattedTime = formattedTime.replace(/:+$/, '');
     $('#proxyCount').html(
-      `Showing ${count} of ${matched_proxy} proxies<br>Remaining time ${formattedTime}`
+      `Showing ${count} of ${matched_proxy} proxies<br>Remaining test time ${formattedTime}`
     );
   }
 
@@ -657,8 +673,8 @@ $(document).ready(function () {
   // country-related data
   updateCountryGroups();
   updateMultiCountrySelector();
-  updateProxyCount();
 
   // depends on proxies
   renderTable();
+  updateProxyCount(0, 0, 0);
 });
