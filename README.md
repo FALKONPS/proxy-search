@@ -2,14 +2,14 @@
 
 Proxy Search is a self-hosted web UI offering many advanced features to choose from and test proxies.
 
-![image](https://github.com/user-attachments/assets/618b0d6c-bd54-407f-97a5-492c60a6e48a)
+![image](https://github.com/user-attachments/assets/d4f2050b-61ce-4a13-baba-4671f1d39777)
 
 **Warning:** This project is still in development.
 
 ## Features
 
 - Parse free proxy websites.
-- Test actual speed in MB/s.
+- Test actual speed in MB/s and calculate latency
 - Multi-file test.
 - Self-hosted.
 - User-friendly interface.
@@ -23,16 +23,16 @@ Proxy Search is a self-hosted web UI offering many advanced features to choose f
 
 ## TODO
 
-- Select source parser
-- Export data as JSON
+- <s>Export data as JSON</s>: The data will be available in the proxy folder after the test is complete
+- <s>Select source parser</s>
 - <s>Estimate the total test time</s>
 - <s>Multi-file test (multi-region proxy)</s>
 
 ## Problems
 
-- Auto-reload drop event/stream session (possible conflict between jQuery and JavaScript).
+- Auto-reload drop event/stream session <s>(possible conflict between jQuery and JavaScript)</s>.
+  - Caused by errors caught during fetching API
   - Solved by persisting the session.
-
 
 ## Quick Install
 
@@ -56,6 +56,9 @@ To build and run the Docker image, follow these steps:
    ```bash
    docker run -p 2001:2001 -p 5000:80 falkonps/proxy-search:latest
    ```
+
+The web interface can be accessed using localhost:5000
+
 ## License
 
 This project is licensed under the MIT License. For more details, see the [LICENSE](LICENSE) file.
