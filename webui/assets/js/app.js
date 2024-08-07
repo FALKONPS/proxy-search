@@ -428,9 +428,12 @@ $(document).ready(function () {
       let keyA = a[field];
       let keyB = b[field];
 
-      if (field === 'speed') {
+      if (field === 'speed' || field === 'latency') {
         keyA = parseFloat(keyA);
         keyB = parseFloat(keyB);
+      } else if (field === 'address') {
+        keyA = parseInt(keyA.split(':')[1]);
+        keyB = parseInt(keyB.split(':')[1]);
       }
 
       if (keyA < keyB) return direction === 'asc' ? -1 : 1;
