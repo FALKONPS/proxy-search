@@ -284,7 +284,7 @@ $(document).ready(function () {
   function loadLastTest() {
     clearTable();
     disableButton($('#refreshBtn'), 'Refreshing...', 'fa-spinner');
-    $.getJSON(`${API_URL}/last_test_results`)
+    $.getJSON(`${API_URL}/last_test`)
       .done(handleTestResults)
       .fail(handleError)
       .always(() => {
@@ -543,6 +543,7 @@ $(document).ready(function () {
         visibleCount++;
       }
     });
+    updateProxyCount(visibleCount, proxies.length, 0);
   }
   function shouldRenderProxy(proxy, hideUnavailable, selectedTypes) {
     return (
@@ -676,5 +677,4 @@ $(document).ready(function () {
 
   // depends on proxies
   renderTable();
-  updateProxyCount(0, 0, 0);
 });

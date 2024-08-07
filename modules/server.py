@@ -14,23 +14,25 @@ proxies = []
 thread = None
 
 
-@app.route("/last_test_results", methods=["GET"])
+@app.route("/last_test", methods=["GET"])
 def get_last_test():
-    return jsonify(util_proxy.last_test)
+    if util_proxy.last_test:
+        return jsonify(util_proxy.last_test)
+    return jsonify(util_proxy.load_test()), 200
 
 
 @app.route("/get_proxies", methods=["GET"])
 def get_proxy_list():
-    return jsonify(proxies)
+    return jsonify(util_proxy.load_proxy_data()), 200
 
 
 @app.route("/test", methods=["POST"])
 def start_test():
-
     global proxies, thread
     if util_proxy.is_testing:
         return jsonify(success=False, message="A test is already in progress")
 
+    util_proxy.is_testing = True
     data = request.get_json()
     countries = data.get("countries", [])
     search_engine = data.get(
@@ -40,7 +42,15 @@ def start_test():
     max_proxies = data.get("maxProxies")
     if search_engine == "www.freeproxy.world":
         # Note parsing 'freeproxy.world' consumes a lot of time (1>MIN)
-        proxies = parser.parser_freeproxy(countries=countries, max_proxy=max_proxies)
+        if not (countries or max_proxies):
+            # If there is no saved proxy data, scrape the website and save a copy
+            proxies = util_proxy.load_proxy_data()
+            if not proxies:
+                proxies = parser.scraping_freeproxy()
+        else:
+            proxies = parser.parser_freeproxy(
+                countries=countries, max_proxy=max_proxies
+            )
     else:
         countries = [public.countryNames[a] for a in countries]  # full name
         proxies_raw = util_proxy.load_proxy_data()
@@ -55,8 +65,8 @@ def start_test():
         # Remove unwanted connection types
         proxies = [proxy for proxy in proxies if proxy["type"] in connection_types]
     if not len(proxies):
+        util_proxy.is_testing = False
         return jsonify(success=True, message="No proxy matched found"), 200
-
     thread = threading.Thread(target=util_proxy.test_all_proxies, args=(proxies,))
     thread.daemon = True
     thread.start()
@@ -94,6 +104,14 @@ def force_stop():
             thread.join(30)
         except:
             print("EXIT EXCEPTION ")
+    return (
+        jsonify(
+            {
+                "success": True,
+            }
+        ),
+        200,
+    )
 
 
 if __name__ == "__main__":
