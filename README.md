@@ -36,6 +36,26 @@ Proxy Search is a self-hosted web UI offering many advanced features to choose f
 
 ## Quick Install
 
+### Method 1: Pull and Run the Docker Image
+
+To pull and run from the Docker hub, use the following commands:
+
+1. Pull the Docker image:
+
+   ```bash
+   docker pull falkonps/proxy-search
+   ```
+
+2. Run the Docker container:
+
+   ```bash
+   docker run -p 2001:2001 -p 5000:80 falkonps/proxy-search:latest
+   ```
+
+   The web interface can be accessed using `http://localhost:5000`
+
+### Method 2: Self Build (Recommend)
+
 To build and run the Docker image, follow these steps:
 
 1. Clone the project:
@@ -57,7 +77,7 @@ To build and run the Docker image, follow these steps:
    docker run -p 2001:2001 -p 5000:80 falkonps/proxy-search:latest
    ```
 
-The web interface can be accessed using localhost:5000
+   The web interface can be accessed using `http://localhost:5000`
 
 ## License
 
