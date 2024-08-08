@@ -1,40 +1,24 @@
 # Proxy Search
 
-Proxy Search is a self-hosted web UI offering many advanced features to choose from and test proxies.
+Proxy Search is a self-hosted web UI for advanced proxy selection and testing
 
 ![image](https://github.com/user-attachments/assets/d4f2050b-61ce-4a13-baba-4671f1d39777)
 
-**Warning:** This project is still in development.
+> [!WARNING]
+> This project is still in development.
 
-## Features
+## ✨ Features
 
-- Parse free proxy websites.
-- Test actual speed in MB/s and calculate latency
-- Multi-file test.
-- Self-hosted.
-- User-friendly interface.
+- **Search Proxies:** Use parsing to extract free proxies.
+- **Speed & Latency Tests:** Measure proxy performance.
+- **Advanced Filters:** Filter proxies by country, connection type, etc.
+- **User-Friendly:** Easy-to-use interface.
+- **Remaining Time Display:** Show time left for tests.
+- **Proxy Limit:** Set limits on the number of proxies to test.
+- **Stop Test:** Ability to halt ongoing tests.
+- **Docker Support:** Self-host using Docker.
 
-## Implementation
-
-- Flask for backend and API.
-- Pure HTML for the main interface, along with Bootstrap.
-- jQuery & JavaScript.
-- Docker.
-
-## TODO
-
-- <s>Export data as JSON</s>: The data will be available in the proxy folder after the test is complete
-- <s>Select source parser</s>
-- <s>Estimate the total test time</s>
-- <s>Multi-file test (multi-region proxy)</s>
-
-## Problems
-
-- Auto-reload drop event/stream session <s>(possible conflict between jQuery and JavaScript)</s>.
-  - Caused by errors caught during fetching API
-  - Solved by persisting the session.
-
-## Quick Install
+## 🚀 Quick Install
 
 ### Method 1: Pull and Run the Docker Image
 
@@ -79,6 +63,27 @@ To build and run the Docker image, follow these steps:
 
    The web interface can be accessed using `http://localhost:5000`
 
-## License
+## 🛠️ Implementation
+
+- Flask for backend and API.
+- Pure HTML for the main interface, along with Bootstrap.
+- jQuery & JavaScript.
+- Docker.
+
+## 🐛 Known Issues
+
+- Auto-reload drop event/stream session
+  - Caused by errors caught during fetching API
+  - Solved by persisting the session.
+
+## 📝 TODO
+
+- Export data as JSON:
+
+## 📜 License
 
 This project is licensed under the MIT License. For more details, see the [LICENSE](LICENSE) file.
+
+## ⚖️ Disclaimer
+
+[Disclaimer LICENSE](LICENSE.md) file.
