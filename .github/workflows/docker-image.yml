@@ -22,7 +22,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build the Docker image
-        run: docker build . --file Dockerfile.server --tag proxy-test-search:${{ steps.tag.outputs.tag }}
+        run: docker build . --tag proxy-test-search:${{ steps.tag.outputs.tag }}
 
       - name: Run Docker container
         run: |
