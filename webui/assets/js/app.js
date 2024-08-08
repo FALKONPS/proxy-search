@@ -488,12 +488,15 @@ $(document).ready(function () {
       }
     });
 
-    countrySelect.empty();
-
     const totalProxies = proxies.length;
-    countrySelect.append(
-      `<option value="">All Countries (${totalProxies})</option>`
-    );
+    let allCountriesOption = countrySelect.find('option[value=""]');
+    if (allCountriesOption.length === 0) {
+      countrySelect.prepend(
+        `<option value="">All Countries (${totalProxies})</option>`
+      );
+    } else {
+      allCountriesOption.text(`All Countries (${totalProxies})`);
+    }
 
     const sortedCountries = Object.entries(countryCounts).sort((a, b) => {
       if (b[1] !== a[1]) {
@@ -504,13 +507,24 @@ $(document).ready(function () {
       );
     });
 
-    // Add options for each country
     sortedCountries.forEach(([country, count]) => {
-      countrySelect.append(
-        `<option value="${country}">${
-          countryNames[country] || country
-        } (${count})</option>`
-      );
+      const optionText = `${countryNames[country] || country} (${count})`;
+      let option = countrySelect.find(`option[value="${country}"]`);
+
+      if (option.length === 0) {
+        countrySelect.append(
+          `<option value="${country}">${optionText}</option>`
+        );
+      } else {
+        option.text(optionText);
+      }
+    });
+
+    countrySelect.find('option').each(function () {
+      const value = $(this).val();
+      if (value !== '' && !(value in countryCounts)) {
+        $(this).remove();
+      }
     });
   }
   function updateSelectedCountriesDisplay() {
@@ -529,8 +543,10 @@ $(document).ready(function () {
 
   function renderTable() {
     const $proxyTableBody = $('#proxyTableBody');
+    const $countrySelect = $('#countrySelect');
     $proxyTableBody.empty();
     visibleCount = 0;
+    const country = $countrySelect.val();
     const hideUnavailable = $('#hideUnavailable').is(':checked');
     const maxProxies = parseInt($('#maxProxies').val()) || Infinity;
     const selectedTypes = getSelectedConnectionTypes();
@@ -539,7 +555,7 @@ $(document).ready(function () {
     }
     proxies.forEach((proxy) => {
       if (
-        shouldRenderProxy(proxy, hideUnavailable, selectedTypes) &&
+        shouldRenderProxy(proxy, hideUnavailable, selectedTypes, country) &&
         visibleCount < maxProxies
       ) {
         appendProxy(proxy);
@@ -548,11 +564,12 @@ $(document).ready(function () {
     });
     updateProxyCount(visibleCount, proxies.length, 0);
   }
-  function shouldRenderProxy(proxy, hideUnavailable, selectedTypes) {
+  function shouldRenderProxy(proxy, hideUnavailable, selectedTypes, country) {
     return (
       (!hideUnavailable || parseFloat(proxy.speed) > 0) && // Show the non-zero speed proxy If there is no selector, show all
       (selectedTypes.length === 0 ||
-        selectedTypes.includes(proxy.type.toLowerCase())) // If the type 'proxy' is in selectedTypes, include only the 'proxy' type. Otherwise, if there is no selector, show all
+        selectedTypes.includes(proxy.type.toLowerCase())) && // If the type 'proxy' is in selectedTypes, include only the 'proxy' type. Otherwise, if there is no selector, show all
+      (country === '' || proxy.country === country)
     );
   }
 
