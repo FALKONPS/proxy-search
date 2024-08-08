@@ -68,7 +68,7 @@ def parser_freeproxy(countries, max_proxy=50, max_page=150, on_proxy=True):
                         filtered.append(compact)
                         counter = counter + 1
                         if on_proxy and len(filtered) >= max_proxy:
-                            util_proxy.save_test(filtered)
+                            # util_proxy.save_test(filtered)
                             return filtered
                         elif per_value and counter >= per_value:
                             to_next = True

@@ -16,8 +16,8 @@ thread = None
 
 @app.route("/last_test", methods=["GET"])
 def get_last_test():
-    if util_proxy.last_test:
-        return jsonify(util_proxy.last_test)
+    if util_proxy.is_testing or util_proxy.last_test:
+        return jsonify(util_proxy.last_test), 200
     return jsonify(util_proxy.load_test()), 200
 
 
@@ -30,7 +30,7 @@ def get_proxy_list():
 def start_test():
     global proxies, thread
     if util_proxy.is_testing:
-        return jsonify(success=False, message="A test is already in progress")
+        return jsonify(success=False, message="A test is already in progress"), 200
 
     util_proxy.is_testing = True
     data = request.get_json()
@@ -104,14 +104,7 @@ def force_stop():
             thread.join(30)
         except:
             print("EXIT EXCEPTION ")
-    return (
-        jsonify(
-            {
-                "success": True,
-            }
-        ),
-        200,
-    )
+    return jsonify(success=True), 200
 
 
 if __name__ == "__main__":
