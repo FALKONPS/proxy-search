@@ -3,15 +3,23 @@ import threading
 
 import public
 import util_proxy
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request,render_template
 from flask_cors import CORS
 
-app = Flask(__name__)
+
+app = Flask(__name__,template_folder='template',static_folder='./template/webui/assets/')
 CORS(app)
 
 parser_search_engine = ["www.freeproxy.world", "JSON"]
 proxies = []
 thread = None
+
+
+
+@app.route('/')
+def hello():
+    return render_template('./webui/index.html')
+
 
 
 @app.route("/last_test", methods=["GET"])
@@ -108,4 +116,4 @@ def force_stop():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=2001)
+    app.run(host="0.0.0.0",debug=True, port=2001)
