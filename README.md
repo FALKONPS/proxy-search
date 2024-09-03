@@ -38,7 +38,7 @@ To pull and run from the Docker hub, use the following commands:
 
    The web interface can be accessed using `http://localhost:5000`
 
-### Method 2: Self Build (Recommend)
+### Method 2: Self Build (Recommended)
 
 To build and run the Docker image, follow these steps:
 
@@ -58,10 +58,10 @@ To build and run the Docker image, follow these steps:
 3. Run the Docker container:
 
    ```bash
-   docker run -p 2001:2001 -p 5000:80 falkonps/proxy-search:latest
+   docker run -p 2001:2001 falkonps/proxy-search:latest
    ```
 
-   The web interface can be accessed using `http://localhost:5000`
+   The web interface can be accessed using `http://localhost:2001`
 
 ## 🛠️ Implementation
 
