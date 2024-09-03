@@ -7,7 +7,7 @@ $(document).ready(function () {
   let pollInterval;
   var visibleCount = 0;
   // Constants
-  const API_URL = 'http://localhost:2001';
+  const API_URL = ''; // remove CORS
 
   const countryRegion = {
     'Middle East': [

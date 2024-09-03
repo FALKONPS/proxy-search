@@ -8,7 +8,6 @@ from flask_cors import CORS
 
 
 app = Flask(__name__,template_folder='template',static_folder='./template/webui/assets/')
-CORS(app)
 
 parser_search_engine = ["www.freeproxy.world", "JSON"]
 proxies = []
