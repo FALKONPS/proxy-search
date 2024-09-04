@@ -4,8 +4,6 @@ import threading
 import public
 import util_proxy
 from flask import Flask, jsonify, request,render_template
-from flask_cors import CORS
-
 
 app = Flask(__name__,template_folder='template',static_folder='./template/webui/assets/')
 
