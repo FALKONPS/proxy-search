@@ -5,7 +5,7 @@ import public
 import util_proxy
 from flask import Flask, jsonify, request,render_template
 
-app = Flask(__name__,template_folder='template',static_folder='./template/webui/assets/')
+app = Flask(__name__,static_url_path='',template_folder='template',static_folder='static')
 
 parser_search_engine = ["www.freeproxy.world", "JSON"]
 proxies = []
@@ -15,7 +15,7 @@ thread = None
 
 @app.route('/')
 def hello():
-    return render_template('./webui/index.html')
+    return render_template('index.html')
 
 
 
